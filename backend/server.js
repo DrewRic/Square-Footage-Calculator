@@ -1,28 +1,22 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+const connectDB = require('./db');
+const authRoutes = require('./routes/auth');
+const roomRoutes = require('./routes/room');
 const cors = require('cors');
-const roomRoutes = require('./routes/roomRoutes');
-const userRoutes = require('./routes/userRoutes');
-
-dotenv.config();
+require('dotenv').config();
 
 const app = express();
 
-app.use(cors());
+// Middleware
 app.use(express.json());
+app.use(cors());
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB Connected'))
-.catch((err) => console.error(err));
+// Connect to database
+connectDB();
 
 // Routes
-app.use('/api/rooms', roomRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/room', roomRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
